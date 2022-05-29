@@ -1,0 +1,14 @@
+#page {
+
+}
+
+#page .content {
+
+}
+
+#page .content .search-bar {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}

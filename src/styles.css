@@ -1,0 +1,32 @@
+@font-face {
+    font-family: "Amazon Amber Medium";
+    src: url("assets/fonts/Amazon-Ember-Medium.ttf");
+}
+
+@font-face {
+    font-family: "Amazon Amber Bold";
+    src: url("assets/fonts/AmazonEmber_Bd.ttf");
+}
+
+:root {
+    --background-color: #f7f7f7;
+    --primary-color: #319ECD;
+    --light-primary-color: #42C0F5;
+    --bold-primary-color: #2B7899;
+    --secondary-color: #16949D;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+      background: var(--background-color);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-color);
+    font-family: Amazon Amber Bold;
+  }

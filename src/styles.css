@@ -8,6 +8,11 @@
     src: url("assets/fonts/AmazonEmber_Bd.ttf");
 }
 
+@font-face {
+  font-family: "Amazon Amber Italic";
+  src: url("assets/fonts/Amazon-Ember-MediumItalic.ttf");
+}
+
 :root {
     --background-color: #f7f7f7;
     --primary-color: #319ECD;

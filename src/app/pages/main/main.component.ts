@@ -11,19 +11,24 @@ export class MainComponent implements OnInit {
 
   searchControl: FormControl;
   subject: Subject<String>;
-  formValue: String = '';
+  formValue: String = 'Teste';
 
   constructor() { 
     this.searchControl = new FormControl('');
     this.subject = new Subject();
-    // this.formValue = new Observable();
-    this.searchControl.valueChanges.subscribe(value => this.subject.next(value));
+    //this.formValue = new Observable();
+    this.searchControl.valueChanges.subscribe(value => {
+      this.subject.next(value);
+      console.log(`Subject ${this.subject} Form ${this.searchControl.value}`);
+    });
   }
 
   ngOnInit(): void {
     this.subject.pipe(
-      debounceTime(1000), 
-      map(text => this.formValue = text)
+      map(text => {
+        this.formValue = text;
+        console.log(this.formValue);
+      })
     );
   }
 

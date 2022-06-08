@@ -4,6 +4,11 @@
             <img src="../../../assets/search.svg" alt="Search">
             <input [formControl]="searchControl">
         </div>
-        <p *ngFor="let album of albuns">{{album.nome}}</p>
+        <div class="albuns">
+            <div *ngFor="let album of albuns" class="album">
+                <img src="{{album.urlImagem}}" alt="Imagem do Album {{album.nome}}">
+            </div>
+        </div>
+        
     </div>
 </div>

@@ -6,7 +6,20 @@
         </div>
         <div class="albuns">
             <div *ngFor="let album of albuns" class="album">
-                <img src="{{album.urlImagem}}" alt="Imagem do Album {{album.nome}}">
+                <img src="{{album.urlImagem}}" alt="Imagem do Album {{album.nome}}" class="album-image">
+                <div class="hide">
+                    <div class="album-data">
+                        <p>{{album.nome}}</p>
+                        <p>{{album.artistas[0]}}</p>
+                        <p>{{album.dataDeLancamento}}</p>
+                    </div>
+                    <button (click)="salvarAlbum(album)" class="add-button">Adicionar</button>
+                </div>
+            </div>
+        </div>
+        <div class="database-albuns">
+            <div *ngFor="let databaseAlbum of databaseAlbuns$ | async" class="database-album">
+                <p>{{databaseAlbum.nome}}</p>
             </div>
         </div>
         

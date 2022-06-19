@@ -9,9 +9,9 @@
                 <img src="{{album.urlImagem}}" alt="Imagem do Album {{album.nome}}" class="album-image">
                 <div class="hide">
                     <div class="album-data">
-                        <p>{{album.nome}}</p>
-                        <p>{{album.artistas[0]}}</p>
-                        <p>{{album.dataDeLancamento}}</p>
+                        <p class="album-name">{{album.nome}}</p>
+                        <p class="album-artist">{{album.artistas[0]}}</p>
+                        <p class="album-date">{{album.dataDeLancamento}}</p>
                     </div>
                     <button (click)="salvarAlbum(album)" class="add-button">Adicionar</button>
                 </div>

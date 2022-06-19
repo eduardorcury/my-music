@@ -13,6 +13,11 @@
   src: url("assets/fonts/Amazon-Ember-MediumItalic.ttf");
 }
 
+@font-face {
+  font-family: "Amazon Amber Bold Italic";
+  src: url("assets/fonts/AmazonEmber_BdIt.ttf");
+}
+
 :root {
     --background-color: #f7f7f7;
     --primary-color: #319ECD;

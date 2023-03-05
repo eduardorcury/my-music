@@ -18,20 +18,20 @@ export class MainComponent implements OnInit {
   albuns: Album[] = [];
   databaseAlbuns$: Observable<DatabaseAlbum[]>;
 
-  constructor(private spotifyService: SpotifyService) { 
+  constructor(private spotifyService: SpotifyService) {
     this.searchControl = new FormControl('');
     this.searchControl.valueChanges
-        .pipe(debounceTime(this.debounceTime))
-        .subscribe(query => spotifyService.search(query)
+      .pipe(debounceTime(this.debounceTime))
+      .subscribe(query => spotifyService.search(query)
         .subscribe(resposta => this.albuns = resposta.map(album => {
-            return {
-              nome: album.nome,
-              uriSpotify: album.uriSpotify,
-              urlImagem: album.urlImagem,
-              id: album.id,
-              artistas: album.artistas,
-              dataDeLancamento: album.dataDeLancamento
-            } as Album
+          return {
+            nome: album.nome,
+            uriSpotify: album.uriSpotify,
+            urlImagem: album.urlImagem,
+            id: album.id,
+            artistas: album.artistas,
+            dataDeLancamento: album.dataDeLancamento
+          } as Album
         })));
     this.databaseAlbuns$ = liveQuery(() => database.albuns.toArray());
   }
@@ -41,12 +41,18 @@ export class MainComponent implements OnInit {
 
   salvarAlbum(album: Album): void {
     console.log(album)
-    database.albuns.add({
-        nome: album.nome,
-        uriSpotify: album.uriSpotify,
-        urlImagem: album.urlImagem,
-        artistas: album.artistas
-    });
+    database.albuns.where('uriSpotify')
+      .equals(album.uriSpotify)
+      .count(function (count) {
+        if (count == 0) {
+          database.albuns.add({
+            nome: album.nome,
+            uriSpotify: album.uriSpotify,
+            urlImagem: album.urlImagem,
+            artistas: album.artistas
+          });
+        }
+      })
   }
 
 }

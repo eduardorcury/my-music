@@ -6,8 +6,8 @@ export class Database extends Dexie {
 
     constructor() {
         super('ngdexieliveQuery');
-        this.version(1).stores({
-            albuns: '++id, &nome'
+        this.version(2).stores({
+            albuns: '++id, uriSpotify'
         });
     }
     

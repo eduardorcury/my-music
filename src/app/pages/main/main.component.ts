@@ -17,6 +17,11 @@ export class MainComponent implements OnInit {
   searchControl: FormControl;
   albuns: Album[] = [];
   databaseAlbuns$: Observable<DatabaseAlbum[]>;
+  filters = [
+    { type: "DECADA", name: "por década" },
+    { type: "ARTISTA", name: "por artista" }
+  ];
+  selectedFilter: String = "DECADA";
 
   constructor(private spotifyService: SpotifyService) {
     this.searchControl = new FormControl('');

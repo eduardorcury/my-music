@@ -17,9 +17,19 @@
                 <button (click)="salvarAlbum(album)" class="add-button">Salvar</button>
             </div>
         </div>
+        <div class="database-filter">
+            <p>Álbuns</p>
+            <mat-form-field>
+                <mat-select [(value)]="selectedFilter">
+                    <mat-option *ngFor="let filter of filters" [value]="filter.type">{{filter.name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        
         <div class="database-albuns">
             <div *ngFor="let databaseAlbum of databaseAlbuns$ | async" class="database-wrapper">
-                <img src="{{databaseAlbum.urlImagem}}" alt="Imagem do Album {{databaseAlbum.nome}}" class="database-album">
+                <img src="{{databaseAlbum.urlImagem}}" alt="Imagem do Album {{databaseAlbum.nome}}"
+                    class="database-album">
             </div>
         </div>
 

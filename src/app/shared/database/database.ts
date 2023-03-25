@@ -6,7 +6,7 @@ export class Database extends Dexie {
 
     constructor() {
         super('ngdexieliveQuery');
-        this.version(2).stores({
+        this.version(3).stores({
             albuns: '++id, uriSpotify'
         });
     }
@@ -18,6 +18,7 @@ export interface DatabaseAlbum {
     uriSpotify: string,
     urlImagem: string,
     artistas: string[]
+    dataDeLancamento: string
 }
 
 export const database = new Database();

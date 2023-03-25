@@ -27,11 +27,15 @@
         </div>
         
         <div class="database-albuns">
-            <div *ngFor="let databaseAlbum of databaseAlbuns$ | async" class="database-wrapper">
-                <img src="{{databaseAlbum.urlImagem}}" alt="Imagem do Album {{databaseAlbum.nome}}"
-                    class="database-album">
+            <div *ngFor="let recipient of albunsAgrupados | keyvalue" class="grouped-albuns">
+                <p>{{recipient.key}}</p>
+                <div class="group-by">
+                    <div *ngFor="let databaseAlbum of recipient.value" class="database-wrapper">
+                        <img src="{{databaseAlbum.urlImagem}}" alt="Imagem do Album {{databaseAlbum.nome}}"
+                            class="database-album">
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
 </div>

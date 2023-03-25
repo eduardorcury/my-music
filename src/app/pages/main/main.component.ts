@@ -22,6 +22,7 @@ export class MainComponent implements OnInit {
     { type: "ARTISTA", name: "por artista" }
   ];
   selectedFilter: String = "DECADA";
+  albunsAgrupados: Map<Number, Album[]> = new Map;
 
   constructor(private spotifyService: SpotifyService) {
     this.searchControl = new FormControl('');
@@ -39,13 +40,33 @@ export class MainComponent implements OnInit {
           } as Album
         })));
     this.databaseAlbuns$ = liveQuery(() => database.albuns.toArray());
+
+    this.databaseAlbuns$.subscribe(albumList => {
+      this.albunsAgrupados = new Map();
+      albumList.forEach(databaseAlbum => {
+        const album = {
+          nome: databaseAlbum.nome,
+          uriSpotify: databaseAlbum.uriSpotify,
+          urlImagem: databaseAlbum.urlImagem,
+          artistas: databaseAlbum.artistas,
+          dataDeLancamento: databaseAlbum.dataDeLancamento,
+        } as Album;
+        const lancamento = Math.floor(+album.dataDeLancamento.split("-")[0] / 10) * 10;
+        const collection = this.albunsAgrupados.get(lancamento);
+        if (!collection) {
+          this.albunsAgrupados.set(lancamento, [album])
+        } else {
+          collection.push(album)
+        }
+      })
+    });
+
   }
 
   ngOnInit(): void {
   }
 
   salvarAlbum(album: Album): void {
-    console.log(album)
     database.albuns.where('uriSpotify')
       .equals(album.uriSpotify)
       .count(function (count) {
@@ -54,7 +75,8 @@ export class MainComponent implements OnInit {
             nome: album.nome,
             uriSpotify: album.uriSpotify,
             urlImagem: album.urlImagem,
-            artistas: album.artistas
+            artistas: album.artistas,
+            dataDeLancamento: album.dataDeLancamento
           });
         }
       })

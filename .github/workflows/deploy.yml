@@ -32,4 +32,4 @@ jobs:
       - name: Build
         run: yarn build
       - name: Deploy
-        run: aws s3 sync ./dist s3://my-music-webapp
+        run: aws s3 sync ./dist/my-music s3://my-music-webapp

@@ -18,7 +18,8 @@ export interface DatabaseAlbum {
     uriSpotify: string,
     urlImagem: string,
     artistas: string[]
-    dataDeLancamento: string
+    dataDeLancamento: string,
+    nota: string
 }
 
 export const database = new Database();

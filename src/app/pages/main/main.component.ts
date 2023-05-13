@@ -77,10 +77,11 @@ export class MainComponent implements OnInit {
       data: { album }
     });
 
+    let notaDoAlbum: string;
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Handle the selected rating here
-        console.log('Selected rating:', result);
+        notaDoAlbum = result;
       }
     });
 
@@ -93,7 +94,8 @@ export class MainComponent implements OnInit {
             uriSpotify: album.uriSpotify,
             urlImagem: album.urlImagem,
             artistas: album.artistas,
-            dataDeLancamento: album.dataDeLancamento
+            dataDeLancamento: album.dataDeLancamento,
+            nota: notaDoAlbum
           });
         }
       })

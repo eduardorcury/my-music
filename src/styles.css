@@ -42,3 +42,19 @@
   }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.rating-window mat-dialog-container {
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+}
+
+.mat-slider.mat-accent .mat-slider-track-fill, .mat-slider.mat-accent .mat-slider-thumb, .mat-slider.mat-accent .mat-slider-thumb-label {
+  background-color: var(--primary-color);
+}
+
+.mat-slider.mat-accent .mat-slider-thumb-label-text {
+  color: white;
+}

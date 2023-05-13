@@ -1,0 +1,9 @@
+<div class="rating-component">
+    <h2>Avalie o Álbum</h2>
+    <div class="rating-container">
+        <mat-slider thumbLabel [min]="0" [max]="10" [step]="0.1" [(ngModel)]="selectedRating"></mat-slider>
+        <div class="emoticon">{{ getEmoticon(selectedRating) }}</div>
+    </div>
+    <button mat-raised-button color="primary" (click)="closeDialog()">OK</button>
+</div>
+

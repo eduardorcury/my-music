@@ -9,12 +9,16 @@ import { HomeComponent } from './pages/home/home.component';
 import { MainComponent } from './pages/main/main.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import {MatSelectModule} from '@angular/material/select';
+import { AlbumRatingComponent } from './pages/album-rating/album-rating.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    MainComponent
+    MainComponent,
+    AlbumRatingComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +27,10 @@ import {MatSelectModule} from '@angular/material/select';
     HttpClientModule,
     NoopAnimationsModule,
     ReactiveFormsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDialogModule,
+    MatSliderModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

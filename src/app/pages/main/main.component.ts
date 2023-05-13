@@ -5,6 +5,8 @@ import { debounceTime } from 'rxjs';
 import { database, DatabaseAlbum } from 'src/app/shared/database/database';
 import { Album } from 'src/app/shared/dominio/album.model';
 import { SpotifyService } from 'src/app/shared/services/spotify.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AlbumRatingComponent } from '../album-rating/album-rating.component';
 
 @Component({
   selector: 'app-main',
@@ -24,7 +26,8 @@ export class MainComponent implements OnInit {
   selectedFilter: String = "DECADA";
   albunsAgrupados: Map<Number, Album[]> = new Map;
 
-  constructor(private spotifyService: SpotifyService) {
+  constructor(private spotifyService: SpotifyService,
+              private dialog: MatDialog) {
     this.searchControl = new FormControl('');
     this.searchControl.valueChanges
       .pipe(debounceTime(this.debounceTime))
@@ -67,6 +70,20 @@ export class MainComponent implements OnInit {
   }
 
   salvarAlbum(album: Album): void {
+    const dialogRef = this.dialog.open(AlbumRatingComponent, {
+      width: '40%',
+      height: '40%',
+      panelClass: 'rating-window',
+      data: { album }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Handle the selected rating here
+        console.log('Selected rating:', result);
+      }
+    });
+
     database.albuns.where('uriSpotify')
       .equals(album.uriSpotify)
       .count(function (count) {

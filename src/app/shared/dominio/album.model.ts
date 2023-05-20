@@ -5,4 +5,5 @@ export class Album {
     id: string = '';
     artistas: string[] = [];
     dataDeLancamento: string = '';
+    nota: string = '';
 }

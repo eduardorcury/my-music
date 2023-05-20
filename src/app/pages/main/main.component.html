@@ -33,6 +33,10 @@
                     <div *ngFor="let databaseAlbum of recipient.value" class="database-wrapper">
                         <img src="{{databaseAlbum.urlImagem}}" alt="Imagem do Album {{databaseAlbum.nome}}"
                             class="database-album">
+                        <div class="rating">
+                            <div class="emoticon">{{ getEmoticon(databaseAlbum.nota) }}</div>
+                            <p>{{databaseAlbum.nota}}</p>
+                        </div>
                     </div>
                 </div>
             </div>

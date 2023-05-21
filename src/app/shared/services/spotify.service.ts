@@ -10,7 +10,7 @@ export class SpotifyService {
   constructor(private http: HttpClient) { }
 
   search(query: string) {
-    return this.http.get<AlbumDTO[]>("http://localhost:8080/pesquisa", { 
+    return this.http.get<AlbumDTO[]>("http://ec2-15-229-69-255.sa-east-1.compute.amazonaws.com:8080/pesquisa", { 
       params: { 
         album: query 
       } 

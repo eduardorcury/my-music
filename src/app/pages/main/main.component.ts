@@ -7,6 +7,7 @@ import { Album } from 'src/app/shared/dominio/album.model';
 import { SpotifyService } from 'src/app/shared/services/spotify.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AlbumRatingComponent } from '../album-rating/album-rating.component';
+import { OrderedAlbumList, OrderingType } from 'src/app/shared/dominio/ordering';
 
 @Component({
   selector: 'app-main',
@@ -19,12 +20,9 @@ export class MainComponent implements OnInit {
   searchControl: FormControl;
   albuns: Album[] = [];
   databaseAlbuns$: Observable<DatabaseAlbum[]>;
-  filters = [
-    { type: "DECADA", name: "por década" },
-    { type: "ARTISTA", name: "por artista" }
-  ];
-  selectedFilter: String = "DECADA";
-  albunsAgrupados: Map<Number, Album[]> = new Map;
+  orderingTypes = Object.values(OrderingType);
+  selectedOrder: OrderingType = OrderingType.DECADA;
+  orderedList: OrderedAlbumList = new OrderedAlbumList([]);
 
   constructor(private spotifyService: SpotifyService,
     private dialog: MatDialog) {
@@ -45,26 +43,19 @@ export class MainComponent implements OnInit {
     this.databaseAlbuns$ = liveQuery(() => database.albuns.toArray());
 
     this.databaseAlbuns$.subscribe(albumList => {
-      this.albunsAgrupados = new Map();
-      albumList.forEach(databaseAlbum => {
-        console.log(databaseAlbum)
-        const album = {
-          nome: databaseAlbum.nome,
-          uriSpotify: databaseAlbum.uriSpotify,
-          urlImagem: databaseAlbum.urlImagem,
-          artistas: databaseAlbum.artistas,
-          dataDeLancamento: databaseAlbum.dataDeLancamento,
-          nota: databaseAlbum.nota
-        } as Album;
-
-        const lancamento = Math.floor(+album.dataDeLancamento.split("-")[0] / 10) * 10;
-        const collection = this.albunsAgrupados.get(lancamento);
-        if (!collection) {
-          this.albunsAgrupados.set(lancamento, [album])
-        } else {
-          collection.push(album)
-        }
-      })
+      this.orderedList = new OrderedAlbumList(
+        albumList.map(databaseAlbum => {
+          return {
+            nome: databaseAlbum.nome,
+            uriSpotify: databaseAlbum.uriSpotify,
+            urlImagem: databaseAlbum.urlImagem,
+            artistas: databaseAlbum.artistas,
+            dataDeLancamento: databaseAlbum.dataDeLancamento,
+            nota: databaseAlbum.nota
+          } as Album;
+        })
+      );
+      this.orderedList.orderBy(this.selectedOrder);
     });
 
   }
@@ -117,6 +108,10 @@ export class MainComponent implements OnInit {
     if (8 <= rating && rating < 9) return '😍';
     if (9 <= rating && rating <= 10) return '🤩';
     return '';
+  }
+
+  changeOrder() {
+    this.orderedList.orderBy(this.selectedOrder);
   }
 
 }

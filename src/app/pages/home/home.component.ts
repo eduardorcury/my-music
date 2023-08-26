@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { SpotifyService } from 'src/app/shared/services/spotify.service';
 
 @Component({
@@ -16,8 +15,9 @@ export class HomeComponent implements OnInit {
   }
 
   autorizar() {
-    console.log("teste");
-    this.spotifyService.login().subscribe();
+    this.spotifyService.login().subscribe(resposta => {
+      window.location.href = resposta;
+    });
   }
 
 }

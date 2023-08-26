@@ -38,7 +38,7 @@
     line-height: 100%;
 }
 
-#page-home .text a {
+#page-home .text button {
     width: 45%;
     height: 100px;
     background: var(--secondary-color);
@@ -50,13 +50,13 @@
     margin-top: 40px;
 }
 
-#page-home .text a img {
+#page-home .text button img {
     margin: 15px 40px 15px 40px;
     width: 10%;
     min-width: 10%;
 }
 
-#page-home .text a strong {
+#page-home .text button strong {
     display: flex;
     align-items: center;
     justify-content: center;

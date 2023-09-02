@@ -63,8 +63,6 @@ export class MainComponent implements OnInit {
       );
       this.orderedList.orderBy(this.selectedOrder);
     });
-    this.getRecentAlbums();
-
   }
 
   ngOnInit(): void {
@@ -76,10 +74,13 @@ export class MainComponent implements OnInit {
     );
     if (!this.authenticationToken) {
       this.spotifyService.exchangeCode(this.authenticationCode)
-      .subscribe(token => {
-        this.authenticationToken = token.token;
-        sessionStorage.setItem("token", token.token);
-      });
+        .subscribe(token => {
+          this.authenticationToken = token.token;
+          sessionStorage.setItem("token", token.token);
+          this.getRecentAlbums();
+        });
+    } else {
+      this.getRecentAlbums();
     }
   }
 

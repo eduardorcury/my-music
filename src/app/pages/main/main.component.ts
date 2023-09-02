@@ -8,6 +8,7 @@ import { SpotifyService } from 'src/app/shared/services/spotify.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AlbumRatingComponent } from '../album-rating/album-rating.component';
 import { OrderedAlbumList, OrderingType } from 'src/app/shared/dominio/ordering';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -16,6 +17,8 @@ import { OrderedAlbumList, OrderingType } from 'src/app/shared/dominio/ordering'
 })
 export class MainComponent implements OnInit {
 
+  authenticationCode: string = "";
+  authenticationToken: string = sessionStorage.getItem("token") || "";
   debounceTime: number = 1000;
   searchControl: FormControl;
   albuns: Album[] = [];
@@ -23,9 +26,12 @@ export class MainComponent implements OnInit {
   orderingTypes = Object.values(OrderingType);
   selectedOrder: OrderingType = OrderingType.DECADA;
   orderedList: OrderedAlbumList = new OrderedAlbumList([]);
+  recentAlbunsList: Album[] = [];
 
   constructor(private spotifyService: SpotifyService,
-    private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private route: ActivatedRoute) {
+
     this.searchControl = new FormControl('');
     this.searchControl.valueChanges
       .pipe(debounceTime(this.debounceTime))
@@ -57,10 +63,24 @@ export class MainComponent implements OnInit {
       );
       this.orderedList.orderBy(this.selectedOrder);
     });
+    this.getRecentAlbums();
 
   }
 
   ngOnInit(): void {
+    this.route.queryParams
+      .subscribe(params => {
+        console.log(params);
+        this.authenticationCode = params["code"];
+      }
+    );
+    if (!this.authenticationToken) {
+      this.spotifyService.exchangeCode(this.authenticationCode)
+      .subscribe(token => {
+        this.authenticationToken = token.token;
+        sessionStorage.setItem("token", token.token);
+      });
+    }
   }
 
   salvarAlbum(album: Album): void {
@@ -112,6 +132,21 @@ export class MainComponent implements OnInit {
 
   changeOrder() {
     this.orderedList.orderBy(this.selectedOrder);
+  }
+    
+  getRecentAlbums() {
+    this.spotifyService.getRecentAlbums("Bearer " + this.authenticationToken).subscribe(recentAlbums => {
+      this.recentAlbunsList = recentAlbums.map(album => {
+        return {
+          nome: album.nome,
+          uriSpotify: album.uriSpotify,
+          urlImagem: album.urlImagem,
+          id: album.id,
+          artistas: album.artistas,
+          dataDeLancamento: album.dataDeLancamento
+        } as Album
+      });
+    })
   }
 
 }

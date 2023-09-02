@@ -17,6 +17,17 @@
                 <button (click)="salvarAlbum(album)" class="add-button">Salvar</button>
             </div>
         </div>
+
+        <div class="recent-albums">
+            <p>Tocados recentemente</p>
+            <div class="group-by">
+                <div *ngFor="let recentAlbum of recentAlbunsList | slice:0:12" class="database-wrapper">
+                    <img src="{{recentAlbum.urlImagem}}" alt="Imagem do Album {{recentAlbum.nome}}"
+                        class="database-album">
+                </div>
+            </div>
+         </div>
+
         <div class="database-filter">
             <p>Álbuns</p>
             <mat-form-field>

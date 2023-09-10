@@ -5,4 +5,5 @@ export interface AlbumDTO {
     id: string;
     artistas: string[];
     dataDeLancamento: string;
+    nota: string
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { liveQuery, Observable } from 'dexie';
 import { FormControl } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import { Observable, debounceTime, of, tap } from 'rxjs';
 import { database, DatabaseAlbum } from 'src/app/shared/database/database';
 import { Album } from 'src/app/shared/dominio/album.model';
 import { SpotifyService } from 'src/app/shared/services/spotify.service';
@@ -9,6 +8,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AlbumRatingComponent } from '../album-rating/album-rating.component';
 import { OrderedAlbumList, OrderingType } from 'src/app/shared/dominio/ordering';
 import { ActivatedRoute } from '@angular/router';
+import { AlbumDTO } from 'src/app/shared/dtos/album.dto';
+import { SaveAlbumDTO } from 'src/app/shared/dtos/save.album.dto';
 
 @Component({
   selector: 'app-main',
@@ -22,7 +23,7 @@ export class MainComponent implements OnInit {
   debounceTime: number = 1000;
   searchControl: FormControl;
   albuns: Album[] = [];
-  databaseAlbuns$: Observable<DatabaseAlbum[]>;
+  savedAlbums$: Observable<AlbumDTO[]>;
   orderingTypes = Object.values(OrderingType);
   selectedOrder: OrderingType = OrderingType.DECADA;
   orderedList: OrderedAlbumList = new OrderedAlbumList([]);
@@ -46,42 +47,33 @@ export class MainComponent implements OnInit {
             dataDeLancamento: album.dataDeLancamento
           } as Album
         })));
-    this.databaseAlbuns$ = liveQuery(() => database.albuns.toArray());
-
-    this.databaseAlbuns$.subscribe(albumList => {
-      this.orderedList = new OrderedAlbumList(
-        albumList.map(databaseAlbum => {
-          return {
-            nome: databaseAlbum.nome,
-            uriSpotify: databaseAlbum.uriSpotify,
-            urlImagem: databaseAlbum.urlImagem,
-            artistas: databaseAlbum.artistas,
-            dataDeLancamento: databaseAlbum.dataDeLancamento,
-            nota: databaseAlbum.nota
-          } as Album;
-        })
+    this.route.queryParams
+        .subscribe(params => {
+          console.log(params);
+          this.authenticationCode = params["code"];
+        }
       );
+      if (!this.authenticationToken) {
+        this.spotifyService.exchangeCode(this.authenticationCode)
+          .subscribe(token => {
+            this.authenticationToken = token.token;
+            sessionStorage.setItem("token", token.token);
+            this.getRecentAlbums();
+          });
+      } else {
+        this.getRecentAlbums();
+      }
+  
+    this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
+    this.savedAlbums$.subscribe(albumList => {
+      console.log(albumList)
+      this.orderedList = new OrderedAlbumList(albumList);
       this.orderedList.orderBy(this.selectedOrder);
     });
   }
 
   ngOnInit(): void {
-    this.route.queryParams
-      .subscribe(params => {
-        console.log(params);
-        this.authenticationCode = params["code"];
-      }
-    );
-    if (!this.authenticationToken) {
-      this.spotifyService.exchangeCode(this.authenticationCode)
-        .subscribe(token => {
-          this.authenticationToken = token.token;
-          sessionStorage.setItem("token", token.token);
-          this.getRecentAlbums();
-        });
-    } else {
-      this.getRecentAlbums();
-    }
+
   }
 
   salvarAlbum(album: Album): void {
@@ -97,20 +89,11 @@ export class MainComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         notaDoAlbum = result;
-        database.albuns.where('uriSpotify')
-          .equals(album.uriSpotify)
-          .count(function (count) {
-            if (count == 0) {
-              database.albuns.add({
-                nome: album.nome,
-                uriSpotify: album.uriSpotify,
-                urlImagem: album.urlImagem,
-                artistas: album.artistas,
-                dataDeLancamento: album.dataDeLancamento,
-                nota: notaDoAlbum
-              });
-            }
-          })
+
+        this.spotifyService.saveAlbum( { albumId: album.id , albumRating: notaDoAlbum } as SaveAlbumDTO, 
+          this.authenticationToken).subscribe();
+        this.orderedList.albuns.push( { ...album, nota: notaDoAlbum } as Album)
+        this.orderedList.orderBy(this.selectedOrder);
       }
     });
   }
@@ -136,7 +119,7 @@ export class MainComponent implements OnInit {
   }
     
   getRecentAlbums() {
-    this.spotifyService.getRecentAlbums("Bearer " + this.authenticationToken).subscribe(recentAlbums => {
+    this.spotifyService.getRecentAlbums(this.authenticationToken).subscribe(recentAlbums => {
       this.recentAlbunsList = recentAlbums.map(album => {
         return {
           nome: album.nome,

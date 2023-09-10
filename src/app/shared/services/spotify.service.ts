@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AlbumDTO } from '../dtos/album.dto';
 import { TokenDTO } from '../dtos/token.dto';
+import { SaveAlbumDTO } from '../dtos/save.album.dto';
+import { DatabaseAlbum } from '../database/database';
 
 @Injectable({
   providedIn: 'root'
@@ -33,9 +35,25 @@ export class SpotifyService {
   }
 
   getRecentAlbums(code: string) {
-    return this.http.get<AlbumDTO[]>(`${this.apiUrl}/recently_played`, { 
+    return this.http.get<AlbumDTO[]>(`${this.apiUrl}/albums/recently_played`, { 
       headers: {
-        Authorization: code
+        Authorization: "Bearer " + code
+      }
+    });
+  }
+
+  getAlbums(code: string) {
+    return this.http.get<AlbumDTO[]>(`${this.apiUrl}/albums`, {
+      headers: {
+        Authorization: "Bearer " + code
+      }
+    });
+  }
+
+  saveAlbum(album: SaveAlbumDTO, code: string) {
+    return this.http.post(`${this.apiUrl}/albums`, album, {
+      headers: {
+        Authorization: "Bearer " + code
       }
     });
   }

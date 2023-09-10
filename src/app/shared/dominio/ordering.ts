@@ -10,7 +10,7 @@ export enum OrderingType {
 
 export class OrderedAlbumList {
 
-    private albuns: Album[];
+    public albuns: Album[];
     private _albunsAgrupados = new Map();
 
     constructor(albuns: Album[]) {

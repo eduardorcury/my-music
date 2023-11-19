@@ -48,10 +48,10 @@ export class MainComponent implements OnInit {
           } as Album
         })));
     this.route.queryParams
-        .subscribe(params => {
+        .subscribe(async params => {
           console.log(params);
           if (!params["code"]) {
-            this.spotifyService.login().subscribe(resposta => {
+            await this.spotifyService.login().subscribe(resposta => {
               window.location.href = resposta;
               this.authenticationCode = params["code"];
             });

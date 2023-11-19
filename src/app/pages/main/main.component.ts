@@ -50,7 +50,7 @@ export class MainComponent implements OnInit {
     this.route.queryParams
         .subscribe(params => {
           console.log(params);
-          if (this.authenticationToken == "" || this.authenticationToken == undefined || this.authenticationCode == null) {
+          if (this.authenticationToken == "" || this.authenticationToken === undefined || this.authenticationCode == null) {
             if (!params["code"]) {
               this.spotifyService.login().subscribe(resposta => {
                 window.location.href = resposta;
@@ -73,6 +73,9 @@ export class MainComponent implements OnInit {
                   this.setSavedAlbums();
             });
             }
+          } else {
+            this.getRecentAlbums();
+            this.setSavedAlbums();
           }
         }
     );

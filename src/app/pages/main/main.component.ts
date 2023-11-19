@@ -50,6 +50,11 @@ export class MainComponent implements OnInit {
     this.route.queryParams
         .subscribe(params => {
           console.log(params);
+          if (!params["code"]) {
+            this.spotifyService.login().subscribe(resposta => {
+              window.location.href = resposta;
+            });
+          }
           this.authenticationCode = params["code"];
         }
     );
@@ -68,12 +73,12 @@ export class MainComponent implements OnInit {
         });
     } else {
       this.getRecentAlbums();
-          this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
-          this.savedAlbums$.subscribe(albumList => {
-            console.log(albumList)
-            this.orderedList = new OrderedAlbumList(albumList);
-            this.orderedList.orderBy(this.selectedOrder);
-          });
+      this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
+      this.savedAlbums$.subscribe(albumList => {
+        console.log(albumList)
+        this.orderedList = new OrderedAlbumList(albumList);
+        this.orderedList.orderBy(this.selectedOrder);
+      });
     }
   }
 

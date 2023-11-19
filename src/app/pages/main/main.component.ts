@@ -48,40 +48,32 @@ export class MainComponent implements OnInit {
           } as Album
         })));
     this.route.queryParams
-        .subscribe(async params => {
+        .subscribe(params => {
           console.log(params);
           if (!params["code"]) {
-            await this.spotifyService.login().subscribe(resposta => {
+            this.spotifyService.login().subscribe(resposta => {
               window.location.href = resposta;
               this.authenticationCode = params["code"];
+              this.spotifyService.exchangeCode(this.authenticationCode)
+                .subscribe(token => {
+                  this.authenticationToken = token.token;
+                  sessionStorage.setItem("token", token.token);
+                  this.getRecentAlbums();
+                  this.setSavedAlbums();
             });
+          });
           } else {
             this.authenticationCode = params["code"];
+            this.spotifyService.exchangeCode(this.authenticationCode)
+            .subscribe(token => {
+              this.authenticationToken = token.token;
+              sessionStorage.setItem("token", token.token);
+              this.getRecentAlbums();
+              this.setSavedAlbums();
+          });
           }
         }
     );
-    if (!this.authenticationToken || this.authenticationToken == null) {
-      this.spotifyService.exchangeCode(this.authenticationCode)
-        .subscribe(token => {
-          this.authenticationToken = token.token;
-          sessionStorage.setItem("token", token.token);
-          this.getRecentAlbums();
-          this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
-          this.savedAlbums$.subscribe(albumList => {
-            console.log(albumList)
-            this.orderedList = new OrderedAlbumList(albumList);
-            this.orderedList.orderBy(this.selectedOrder);
-          });
-        });
-    } else {
-      this.getRecentAlbums();
-      this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
-      this.savedAlbums$.subscribe(albumList => {
-        console.log(albumList)
-        this.orderedList = new OrderedAlbumList(albumList);
-        this.orderedList.orderBy(this.selectedOrder);
-      });
-    }
   }
 
   ngOnInit(): void {
@@ -143,6 +135,23 @@ export class MainComponent implements OnInit {
         } as Album
       });
     })
+  }
+
+  async setAuthorizationToken(code: string) {
+    this.spotifyService.exchangeCode(code)
+        .subscribe(token => {
+          this.authenticationToken = token.token;
+          sessionStorage.setItem("token", token.token);
+    });
+  }
+
+  setSavedAlbums() {
+    this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
+    this.savedAlbums$.subscribe(albumList => {
+      console.log(albumList)
+      this.orderedList = new OrderedAlbumList(albumList);
+      this.orderedList.orderBy(this.selectedOrder);
+    });
   }
 
 }

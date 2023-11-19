@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { AlbumDTO } from '../dtos/album.dto';
-import { TokenDTO } from '../dtos/token.dto';
 import { SaveAlbumDTO } from '../dtos/save.album.dto';
-import { DatabaseAlbum } from '../database/database';
+import { TokenDTO } from '../dtos/token.dto';
 
 @Injectable({
   providedIn: 'root'

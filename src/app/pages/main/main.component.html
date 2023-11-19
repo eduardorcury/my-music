@@ -22,6 +22,9 @@
             <p>Tocados recentemente</p>
             <div class="group-by">
                 <div *ngFor="let recentAlbum of recentAlbunsList | slice:0:12" class="database-wrapper">
+                    <div class="recent-album-name">
+                        <p>{{recentAlbum.nome}}</p>
+                    </div>
                     <img src="{{recentAlbum.urlImagem}}" alt="Imagem do Album {{recentAlbum.nome}}"
                         class="database-album">
                 </div>
@@ -39,14 +42,17 @@
         
         <div class="database-albuns">
             <div *ngFor="let recipient of orderedList.albunsAgrupados | keyvalue" class="grouped-albuns">
-                <p>{{recipient.key}}</p>
+                <p class="group-by-key">{{recipient.key}}</p>
                 <div class="group-by">
                     <div *ngFor="let databaseAlbum of recipient.value" class="database-wrapper">
+                        <div class="database-album-name">
+                            <p>{{databaseAlbum.nome}}</p>
+                        </div>
                         <img src="{{databaseAlbum.urlImagem}}" alt="Imagem do Album {{databaseAlbum.nome}}"
                             class="database-album">
                         <div class="rating">
                             <div class="emoticon">{{ getEmoticon(databaseAlbum.nota) }}</div>
-                            <p>{{databaseAlbum.nota}}</p>
+                            <p class="database-album-rating">{{databaseAlbum.nota}}</p>
                         </div>
                     </div>
                 </div>

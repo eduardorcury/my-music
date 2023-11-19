@@ -10,7 +10,7 @@ import { DatabaseAlbum } from '../database/database';
 })
 export class SpotifyService {
 
-  apiUrl = "http://ec2-18-228-175-23.sa-east-1.compute.amazonaws.com:8080"
+  apiUrl = "https://akq51p7417.execute-api.sa-east-1.amazonaws.com/default"
 
   constructor(private http: HttpClient) { }
 

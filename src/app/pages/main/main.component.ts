@@ -51,7 +51,7 @@ export class MainComponent implements OnInit {
         .subscribe(params => {
           console.log(params);
           if (this.authenticationToken == "" || this.authenticationToken === undefined || this.authenticationCode == null) {
-            if (!params["code"]) {
+            if (params["code"] == "" || params["code"] === undefined || params["code"] == null) {
               this.spotifyService.login().subscribe(resposta => {
                 window.location.href = resposta;
                 this.authenticationCode = params["code"];

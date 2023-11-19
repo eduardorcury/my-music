@@ -58,19 +58,27 @@ export class MainComponent implements OnInit {
         .subscribe(token => {
           this.authenticationToken = token.token;
           sessionStorage.setItem("token", token.token);
+          this.getRecentAlbums();
+          this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
+          this.savedAlbums$.subscribe(albumList => {
+            console.log(albumList)
+            this.orderedList = new OrderedAlbumList(albumList);
+            this.orderedList.orderBy(this.selectedOrder);
+          });
         });
+    } else {
+      this.getRecentAlbums();
+          this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
+          this.savedAlbums$.subscribe(albumList => {
+            console.log(albumList)
+            this.orderedList = new OrderedAlbumList(albumList);
+            this.orderedList.orderBy(this.selectedOrder);
+          });
     }
-    this.getRecentAlbums();
-  
   }
 
   ngOnInit(): void {
-    this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
-    this.savedAlbums$.subscribe(albumList => {
-      console.log(albumList)
-      this.orderedList = new OrderedAlbumList(albumList);
-      this.orderedList.orderBy(this.selectedOrder);
-    });
+    
   }
 
   salvarAlbum(album: Album): void {

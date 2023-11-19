@@ -53,12 +53,14 @@ export class MainComponent implements OnInit {
           if (!params["code"]) {
             this.spotifyService.login().subscribe(resposta => {
               window.location.href = resposta;
+              this.authenticationCode = params["code"];
             });
+          } else {
+            this.authenticationCode = params["code"];
           }
-          this.authenticationCode = params["code"];
         }
     );
-    if (!this.authenticationToken || this.authenticationToken== null) {
+    if (!this.authenticationToken || this.authenticationToken == null) {
       this.spotifyService.exchangeCode(this.authenticationCode)
         .subscribe(token => {
           this.authenticationToken = token.token;

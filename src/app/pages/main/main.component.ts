@@ -58,7 +58,7 @@ export class MainComponent implements OnInit {
           this.authenticationCode = params["code"];
         }
     );
-    if (!this.authenticationToken) {
+    if (this.authenticationToken == null) {
       this.spotifyService.exchangeCode(this.authenticationCode)
         .subscribe(token => {
           this.authenticationToken = token.token;

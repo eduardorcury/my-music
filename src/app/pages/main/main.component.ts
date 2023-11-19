@@ -50,9 +50,20 @@ export class MainComponent implements OnInit {
     this.route.queryParams
         .subscribe(params => {
           console.log(params);
-          if (!params["code"]) {
-            this.spotifyService.login().subscribe(resposta => {
-              window.location.href = resposta;
+          if (!this.authenticationToken) {
+            if (!params["code"]) {
+              this.spotifyService.login().subscribe(resposta => {
+                window.location.href = resposta;
+                this.authenticationCode = params["code"];
+                this.spotifyService.exchangeCode(this.authenticationCode)
+                  .subscribe(token => {
+                    this.authenticationToken = token.token;
+                    sessionStorage.setItem("token", token.token);
+                    this.getRecentAlbums();
+                    this.setSavedAlbums();
+              });
+            })}
+            else {
               this.authenticationCode = params["code"];
               this.spotifyService.exchangeCode(this.authenticationCode)
                 .subscribe(token => {
@@ -61,16 +72,7 @@ export class MainComponent implements OnInit {
                   this.getRecentAlbums();
                   this.setSavedAlbums();
             });
-          });
-          } else {
-            this.authenticationCode = params["code"];
-            this.spotifyService.exchangeCode(this.authenticationCode)
-            .subscribe(token => {
-              this.authenticationToken = token.token;
-              sessionStorage.setItem("token", token.token);
-              this.getRecentAlbums();
-              this.setSavedAlbums();
-          });
+            }
           }
         }
     );

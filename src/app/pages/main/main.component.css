@@ -170,7 +170,7 @@
 .group-by {
     display: flex;
     flex-direction: row;
-    height: 200px;
+    flex-wrap: wrap;
 }
 
 .rating {

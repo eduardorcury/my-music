@@ -23,7 +23,7 @@ export class MainComponent implements OnInit {
   debounceTime: number = 1000;
   searchControl: FormControl;
   albuns: Album[] = [];
-  savedAlbums$: Observable<AlbumDTO[]>;
+  savedAlbums$: Observable<AlbumDTO[]> = new Observable;
   orderingTypes = Object.values(OrderingType);
   selectedOrder: OrderingType = OrderingType.DECADA;
   orderedList: OrderedAlbumList = new OrderedAlbumList([]);
@@ -52,28 +52,25 @@ export class MainComponent implements OnInit {
           console.log(params);
           this.authenticationCode = params["code"];
         }
-      );
-      if (!this.authenticationToken) {
-        this.spotifyService.exchangeCode(this.authenticationCode)
-          .subscribe(token => {
-            this.authenticationToken = token.token;
-            sessionStorage.setItem("token", token.token);
-            this.getRecentAlbums();
-          });
-      } else {
-        this.getRecentAlbums();
-      }
+    );
+    if (!this.authenticationToken) {
+      this.spotifyService.exchangeCode(this.authenticationCode)
+        .subscribe(token => {
+          this.authenticationToken = token.token;
+          sessionStorage.setItem("token", token.token);
+        });
+    }
+    this.getRecentAlbums();
   
+  }
+
+  ngOnInit(): void {
     this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
     this.savedAlbums$.subscribe(albumList => {
       console.log(albumList)
       this.orderedList = new OrderedAlbumList(albumList);
       this.orderedList.orderBy(this.selectedOrder);
     });
-  }
-
-  ngOnInit(): void {
-
   }
 
   salvarAlbum(album: Album): void {

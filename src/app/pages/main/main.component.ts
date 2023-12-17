@@ -88,6 +88,7 @@ export class MainComponent implements OnInit {
   salvarAlbum(album: Album): void {
     this.spotifyService.saveAlbum( { albumId: album.id } as SaveAlbumDTO, 
       this.authenticationToken).subscribe();
+    this.savedAlbunsList.push(album);
   }
 
   avaliarAlbum(album: Album): void {
@@ -105,8 +106,9 @@ export class MainComponent implements OnInit {
         notaDoAlbum = result;
 
         this.spotifyService.saveAlbum( { albumId: album.id , albumRating: notaDoAlbum } as SaveAlbumDTO, 
-          this.authenticationToken).subscribe();
-        this.orderedList.albuns.push( { ...album, nota: notaDoAlbum } as Album)
+        this.authenticationToken).subscribe();
+        this.savedAlbunsList.push(album);
+        this.orderedList.albuns.push( { ...album, nota: notaDoAlbum } as Album);
         this.orderedList.orderBy(this.selectedOrder);
       }
     });

@@ -14,7 +14,10 @@
                         <p class="album-date">{{album.dataDeLancamento}}</p>
                     </div>
                 </div>
-                <button (click)="salvarAlbum(album)" class="add-button">Salvar</button>
+                <div class="button-group">
+                    <button (click)="salvarAlbum(album)" class="add-button">Salvar</button>
+                    <button (click)="avaliarAlbum(album)" class="add-button">Avaliar</button>
+                </div>
             </div>
         </div>
 
@@ -32,7 +35,7 @@
          </div>
 
         <div class="database-filter">
-            <p>Álbuns</p>
+            <p>Álbuns com nota</p>
             <mat-form-field>
                 <mat-select [(value)]="selectedOrder" (selectionChange)="changeOrder()">
                     <mat-option *ngFor="let type of orderingTypes" [value]="type">{{type}}</mat-option>
@@ -40,7 +43,7 @@
             </mat-form-field>
         </div>
         
-        <div class="database-albuns">
+        <div class="rated-albuns">
             <div *ngFor="let recipient of orderedList.albunsAgrupados | keyvalue" class="grouped-albuns">
                 <p class="group-by-key">{{recipient.key}}</p>
                 <div class="group-by">
@@ -55,6 +58,15 @@
                             <p class="database-album-rating">{{databaseAlbum.nota}}</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="saved-albuns">
+            <p>Álbuns Salvos</p>
+            <div class="saved-album">
+                <div *ngFor="let savedAlbum of savedAlbunsList">
+                    <img src="{{savedAlbum.urlImagem}}" alt="Imagem do Album {{savedAlbum.nome}}">
                 </div>
             </div>
         </div>

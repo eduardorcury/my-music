@@ -14,7 +14,7 @@ export class OrderedAlbumList {
     private _albunsAgrupados = new Map();
 
     constructor(albuns: Album[]) {
-        this.albuns = albuns;
+        this.albuns = albuns.filter(album => album.nota !== undefined && album.nota !== '');;
     }
 
     orderBy(type: OrderingType): void {

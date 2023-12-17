@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable, debounceTime, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, debounceTime, of, tap } from 'rxjs';
 import { database, DatabaseAlbum } from 'src/app/shared/database/database';
 import { Album } from 'src/app/shared/dominio/album.model';
 import { SpotifyService } from 'src/app/shared/services/spotify.service';
@@ -23,10 +23,10 @@ export class MainComponent implements OnInit {
   debounceTime: number = 1000;
   searchControl: FormControl;
   albuns: Album[] = [];
-  savedAlbums$: Observable<AlbumDTO[]> = new Observable;
   orderingTypes = Object.values(OrderingType);
   selectedOrder: OrderingType = OrderingType.DECADA;
   orderedList: OrderedAlbumList = new OrderedAlbumList([]);
+  savedAlbunsList: Album[] = [];
   recentAlbunsList: Album[] = [];
 
   constructor(private spotifyService: SpotifyService,
@@ -86,6 +86,11 @@ export class MainComponent implements OnInit {
   }
 
   salvarAlbum(album: Album): void {
+    this.spotifyService.saveAlbum( { albumId: album.id } as SaveAlbumDTO, 
+      this.authenticationToken).subscribe();
+  }
+
+  avaliarAlbum(album: Album): void {
     const dialogRef = this.dialog.open(AlbumRatingComponent, {
       width: '40%',
       height: '40%',
@@ -151,9 +156,9 @@ export class MainComponent implements OnInit {
   }
 
   setSavedAlbums() {
-    this.savedAlbums$ = this.spotifyService.getAlbums(this.authenticationToken)
-    this.savedAlbums$.subscribe(albumList => {
+    this.spotifyService.getAlbums(this.authenticationToken).subscribe(albumList => {
       console.log(albumList)
+      this.savedAlbunsList = albumList; 
       this.orderedList = new OrderedAlbumList(albumList);
       this.orderedList.orderBy(this.selectedOrder);
     });

@@ -9,7 +9,7 @@ import { TokenDTO } from '../dtos/token.dto';
 })
 export class SpotifyService {
 
-  apiUrl = "https://akq51p7417.execute-api.sa-east-1.amazonaws.com/default"
+  apiUrl = "http://localhost:8080"
 
   constructor(private http: HttpClient) { }
 

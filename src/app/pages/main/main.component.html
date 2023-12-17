@@ -22,8 +22,13 @@
         </div>
 
         <div class="recent-albums">
-            <p>Tocados recentemente</p>
-            <div class="group-by">
+            <div class="album-label">
+                <button (click)="toggleRecentAlbums()">
+                    <img src="../assets/play.svg" alt="Play Button">
+                </button>
+                <p>Tocados recentemente</p>
+            </div>
+            <div class="group-by" *ngIf="showRecentAlbums">
                 <div *ngFor="let recentAlbum of recentAlbunsList | slice:0:11" class="database-wrapper">
                     <div class="recent-album-name">
                         <p>{{recentAlbum.nome}}</p>
@@ -35,7 +40,12 @@
          </div>
 
         <div class="database-filter">
-            <p>Álbuns com nota</p>
+            <div class="album-label">
+                <button (click)="toggleRatedAlbums()">
+                    <img src="../assets/play.svg" alt="Play Button">
+                </button>
+                <p>Álbuns com nota</p>
+            </div>
             <mat-form-field>
                 <mat-select [(value)]="selectedOrder" (selectionChange)="changeOrder()">
                     <mat-option *ngFor="let type of orderingTypes" [value]="type">{{type}}</mat-option>
@@ -43,7 +53,7 @@
             </mat-form-field>
         </div>
         
-        <div class="rated-albuns">
+        <div class="rated-albuns" *ngIf="showRatedAlbums">
             <div *ngFor="let recipient of orderedList.albunsAgrupados | keyvalue" class="grouped-albuns">
                 <p class="group-by-key">{{recipient.key}}</p>
                 <div class="group-by">
@@ -63,8 +73,13 @@
         </div>
 
         <div class="saved-albuns">
-            <p>Álbuns Salvos</p>
-            <div class="saved-album">
+            <div class="album-label">
+                <button (click)="showSavedAlbums = !showSavedAlbums">
+                    <img src="../assets/play.svg" alt="Play Button">
+                </button>
+                <p>Álbuns Salvos</p>
+            </div>
+            <div class="saved-album" *ngIf="showSavedAlbums">
                 <div *ngFor="let savedAlbum of savedAlbunsList">
                     <img src="{{savedAlbum.urlImagem}}" alt="Imagem do Album {{savedAlbum.nome}}">
                 </div>

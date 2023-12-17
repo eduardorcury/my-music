@@ -155,13 +155,6 @@
     width: 90%;
 }
 
-.recent-albums p {
-    font-family: Amazon Amber Bold;
-    color: var(--bold-primary-color);
-    font-size: 30px;
-    margin: 30px 0px ;
-}
-
 .rated-albuns {
     margin-top: 30px;
     display: flex;
@@ -206,12 +199,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.database-filter p {
-    font-family: Amazon Amber Bold;
-    color: var(--bold-primary-color);
-    font-size: 30px;
 }
 
 .database-filter mat-select {
@@ -287,18 +274,39 @@
     flex-wrap: wrap;
 }
 
-.saved-albuns p {
-    font-family: Amazon Amber Bold;
-    color: var(--bold-primary-color);
-    font-size: 30px;
-    margin: 30px 0px;
-}
-
-.saved-albuns img{
+.saved-album img{
     margin: 2px;
     height: 100px;
     width: 100px;
     padding: 0px;
     border: 1px solid var(--bold-primary-color);
     border-radius: 2px;
+}
+
+.album-label {
+    display: flex;
+}
+
+.album-label p {
+    font-family: Amazon Amber Bold;
+    color: var(--bold-primary-color);
+    font-size: 30px;
+    margin: 30px 0px;
+}
+
+.album-label button {
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+    margin: 6px 10px 0px 0px;
+}
+
+.album-label button img {
+    height: 20px;
+    width: 20px;
+    filter: invert(43%) sepia(29%) saturate(846%) hue-rotate(153deg) brightness(91%) contrast(102%);
 }

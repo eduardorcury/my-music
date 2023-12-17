@@ -28,6 +28,9 @@ export class MainComponent implements OnInit {
   orderedList: OrderedAlbumList = new OrderedAlbumList([]);
   savedAlbunsList: Album[] = [];
   recentAlbunsList: Album[] = [];
+  showRecentAlbums = true;
+  showRatedAlbums = true;
+  showSavedAlbums = true;
 
   constructor(private spotifyService: SpotifyService,
               private dialog: MatDialog,
@@ -164,6 +167,18 @@ export class MainComponent implements OnInit {
       this.orderedList = new OrderedAlbumList(albumList);
       this.orderedList.orderBy(this.selectedOrder);
     });
+  }
+
+  toggleRecentAlbums() {
+    this.showRecentAlbums = !this.showRecentAlbums;
+  }
+
+  toggleRatedAlbums() {
+    this.showRatedAlbums = !this.showRatedAlbums;
+  }
+
+  toggleSavedAlbums() {
+    this.showSavedAlbums = !this.showSavedAlbums;
   }
 
 }

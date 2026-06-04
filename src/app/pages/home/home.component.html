@@ -1,15 +1,55 @@
-<div id="page-home"> 
-    <div class="content">
-      <main>
-        <img src="../assets/home-image.png" alt="Home Image" />
-        <div class="text">
-          <h1>Organize seus álbuns favoritos</h1>
-            <button (click)="autorizar()">
-              <img src="../assets/play.svg" alt="Play Button">
-              <strong>Acessar</strong>
-            </button>
-            <span></span><span></span><span></span><span></span>
+<nav class="bg-surface/60 backdrop-blur-md flex justify-between items-center w-full px-6 py-2 h-16 sticky top-0 z-50 border-b border-outline-variant" style="backdrop-filter: blur(20px); background-color: rgba(19,19,19,0.7);">
+  <div class="flex items-center">
+    <span class="text-primary text-2xl font-black tracking-tighter" style="font-family: 'Plus Jakarta Sans', sans-serif;">AlbumTracker</span>
+  </div>
+  <div class="flex items-center gap-4">
+    <button (click)="autorizar()" class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-bold hover:brightness-110 active:scale-95 transition-all">
+      Entrar
+    </button>
+  </div>
+</nav>
+
+<main style="background: #131313; min-height: calc(100vh - 64px - 80px);">
+  <section class="relative flex items-center justify-center px-6 overflow-hidden" style="min-height: 870px; background: radial-gradient(circle at 50% 50%, rgba(29, 185, 84, 0.15) 0%, rgba(19,19,19,0) 70%);">
+    <div class="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-10 relative">
+
+      <div class="lg:col-span-6 space-y-4 text-center lg:text-left">
+        <h1 class="text-white leading-tight" style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: clamp(32px, 5vw, 48px); line-height: 1.1; letter-spacing: -0.02em;">
+          Organize seus álbuns favoritos
+        </h1>
+        <p class="text-text-secondary max-w-xl mx-auto lg:mx-0" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; line-height: 24px; font-weight: 500;">
+          Crie sua biblioteca musical definitiva, acompanhe seus lançamentos mais ouvidos e compartilhe sua paixão com o mundo.
+        </p>
+        <div class="pt-4 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <button (click)="autorizar()" class="bg-primary-container text-on-primary-container px-10 py-4 rounded-full font-extrabold text-lg flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all" style="box-shadow: 0 10px 30px rgba(29,185,84,0.2);">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+            Acessar
+          </button>
         </div>
-      </main>
+      </div>
+
+      <div class="lg:col-span-6 relative" style="aspect-ratio: 1 / 1;">
+        <div class="absolute inset-0 flex items-center justify-center">
+          <img alt="Music Illustration" class="w-full h-full object-contain" src="assets/my-music-2.png" style="mix-blend-mode: screen;" />
+        </div>
+      </div>
+
+    </div>
+
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce hidden md:block">
+      <span class="material-symbols-outlined" style="color: #B3B3B3;">keyboard_double_arrow_down</span>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t py-8" style="background-color: #131313; border-color: #353534;">
+  <div class="flex flex-col md:flex-row justify-between items-center px-6 max-w-7xl mx-auto w-full gap-4">
+    <div class="flex flex-col items-center md:items-start gap-2">
+      <span class="text-primary text-xl font-black" style="font-family: 'Plus Jakarta Sans', sans-serif;">AlbumTracker</span>
+      <p style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; color: #bccbb9;">© 2024 AlbumTracker. Todos os direitos reservados.</p>
+    </div>
+    <div class="flex gap-4">
+      <button class="material-symbols-outlined transition-colors" style="color: #bccbb9; background: none; border: none; cursor: pointer;">language</button>
     </div>
   </div>
+</footer>

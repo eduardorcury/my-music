@@ -1,15 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, Observable, debounceTime, of, tap } from 'rxjs';
-import { database, DatabaseAlbum } from 'src/app/shared/database/database';
+import { debounceTime } from 'rxjs';
 import { Album } from 'src/app/shared/dominio/album.model';
+import { OrderingType } from 'src/app/shared/dominio/ordering';
 import { SpotifyService } from 'src/app/shared/services/spotify.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AlbumRatingComponent } from '../album-rating/album-rating.component';
-import { OrderedAlbumList, OrderingType } from 'src/app/shared/dominio/ordering';
 import { ActivatedRoute } from '@angular/router';
-import { AlbumDTO } from 'src/app/shared/dtos/album.dto';
 import { SaveAlbumDTO } from 'src/app/shared/dtos/save.album.dto';
+
+export interface RankingEntry {
+  nome: string;
+  media: number;
+  count: number;
+}
 
 @Component({
   selector: 'app-main',
@@ -24,13 +28,12 @@ export class MainComponent implements OnInit {
   searchControl: FormControl;
   albuns: Album[] = [];
   orderingTypes = Object.values(OrderingType);
-  selectedOrder: OrderingType = OrderingType.DECADA;
-  orderedList: OrderedAlbumList = new OrderedAlbumList([]);
+  selectedOrder: OrderingType = OrderingType.ANO_DESC;
   savedAlbunsList: Album[] = [];
+  sortedSavedAlbunsList: Album[] = [];
   recentAlbunsList: Album[] = [];
-  showRecentAlbums = true;
-  showRatedAlbums = true;
-  showSavedAlbums = true;
+  artistRanking: RankingEntry[] = [];
+  decadeRanking: RankingEntry[] = [];
 
   constructor(private spotifyService: SpotifyService,
               private dialog: MatDialog,
@@ -40,145 +43,150 @@ export class MainComponent implements OnInit {
     this.searchControl.valueChanges
       .pipe(debounceTime(this.debounceTime))
       .subscribe(query => spotifyService.search(query)
-        .subscribe(resposta => this.albuns = resposta.map(album => {
-          return {
-            nome: album.nome,
-            uriSpotify: album.uriSpotify,
-            urlImagem: album.urlImagem,
-            id: album.id,
-            artistas: album.artistas,
-            dataDeLancamento: album.dataDeLancamento
-          } as Album
-        })));
-    this.route.queryParams
-        .subscribe(params => {
-          console.log(params);
-          if (this.authenticationToken == "" || this.authenticationToken === undefined || this.authenticationCode == null) {
-            if (params["code"] == "" || params["code"] === undefined || params["code"] == null) {
-              this.spotifyService.login().subscribe(resposta => {
-                window.location.href = resposta;
-                this.authenticationCode = params["code"];
-                this.spotifyService.exchangeCode(this.authenticationCode)
-                  .subscribe(token => {
-                    this.authenticationToken = token.token;
-                    sessionStorage.setItem("token", token.token);
-                    this.getRecentAlbums();
-                    this.setSavedAlbums();
-              });
-            })}
-            else {
-              this.authenticationCode = params["code"];
-              this.spotifyService.exchangeCode(this.authenticationCode)
-                .subscribe(token => {
-                  this.authenticationToken = token.token;
-                  sessionStorage.setItem("token", token.token);
-                  this.getRecentAlbums();
-                  this.setSavedAlbums();
-            });
-            }
-          } else {
-            this.getRecentAlbums();
-            this.setSavedAlbums();
-          }
-        }
-    );
-  }
-
-  ngOnInit(): void {
-    
-  }
-
-  salvarAlbum(album: Album): void {
-    this.spotifyService.saveAlbum( { albumId: album.id } as SaveAlbumDTO, 
-      this.authenticationToken).subscribe();
-    this.savedAlbunsList.push(album);
-  }
-
-  avaliarAlbum(album: Album): void {
-    const dialogRef = this.dialog.open(AlbumRatingComponent, {
-      width: '40%',
-      height: '40%',
-      panelClass: 'rating-window',
-      data: { album }
-    });
-
-    let notaDoAlbum: string;
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        notaDoAlbum = result;
-
-        this.spotifyService.saveAlbum( { albumId: album.id , albumRating: notaDoAlbum } as SaveAlbumDTO, 
-        this.authenticationToken).subscribe();
-        this.savedAlbunsList.push(album);
-        this.orderedList.albuns.push( { ...album, nota: notaDoAlbum } as Album);
-        this.orderedList.orderBy(this.selectedOrder);
-      }
-    });
-  }
-
-  getEmoticon(albumRating: string): string {
-    // You can define your own mapping of ratings to emoticons here
-    var rating = +albumRating;
-    if (rating < 1) return '🤮';
-    if (1 <= rating && rating < 2) return '😖';
-    if (2 <= rating && rating < 3) return '🙁';
-    if (3 <= rating && rating < 4) return '😕';
-    if (4 <= rating && rating < 5) return '😐';
-    if (5 <= rating && rating < 6) return '🙂';
-    if (6 <= rating && rating < 7) return '😄';
-    if (7 <= rating && rating < 8) return '🥰';
-    if (8 <= rating && rating < 9) return '😍';
-    if (9 <= rating && rating <= 10) return '🤩';
-    return '';
-  }
-
-  changeOrder() {
-    this.orderedList.orderBy(this.selectedOrder);
-  }
-    
-  getRecentAlbums() {
-    this.spotifyService.getRecentAlbums(this.authenticationToken).subscribe(recentAlbums => {
-      this.recentAlbunsList = recentAlbums.map(album => {
-        return {
+        .subscribe(resposta => this.albuns = resposta.map(album => ({
           nome: album.nome,
           uriSpotify: album.uriSpotify,
           urlImagem: album.urlImagem,
           id: album.id,
           artistas: album.artistas,
-          dataDeLancamento: album.dataDeLancamento
-        } as Album
-      });
-    })
-  }
+          dataDeLancamento: album.dataDeLancamento,
+          nota: ''
+        } as Album))));
 
-  async setAuthorizationToken(code: string) {
-    this.spotifyService.exchangeCode(code)
-        .subscribe(token => {
-          this.authenticationToken = token.token;
-          sessionStorage.setItem("token", token.token);
+    this.route.queryParams.subscribe(params => {
+      if (this.authenticationToken == "" || this.authenticationToken === undefined) {
+        if (params["code"]) {
+          this.authenticationCode = params["code"];
+          this.spotifyService.exchangeCode(this.authenticationCode).subscribe(token => {
+            this.authenticationToken = token.token;
+            sessionStorage.setItem("token", token.token);
+            this.getRecentAlbums();
+            this.setSavedAlbums();
+          });
+        } else {
+          this.spotifyService.login().subscribe(resposta => window.location.href = resposta);
+        }
+      } else {
+        this.getRecentAlbums();
+        this.setSavedAlbums();
+      }
     });
   }
 
-  setSavedAlbums() {
+  ngOnInit(): void {}
+
+  get ratedCount(): number {
+    return this.savedAlbunsList.filter(a => a.nota && a.nota !== '').length;
+  }
+
+  salvarAlbum(album: Album): void {
+    this.spotifyService.saveAlbum({ albumId: album.id } as SaveAlbumDTO, this.authenticationToken).subscribe();
+    if (!this.savedAlbunsList.find(a => a.id === album.id)) {
+      this.savedAlbunsList.push(album);
+      this.sortSavedAlbums();
+    }
+  }
+
+  avaliarAlbum(album: Album): void {
+    const dialogRef = this.dialog.open(AlbumRatingComponent, {
+      width: '380px',
+      panelClass: 'rating-window',
+      data: { album }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.spotifyService.saveAlbum({ albumId: album.id, albumRating: result } as SaveAlbumDTO, this.authenticationToken).subscribe();
+        const existing = this.savedAlbunsList.find(a => a.id === album.id);
+        if (existing) {
+          existing.nota = result;
+        } else {
+          this.savedAlbunsList.push({ ...album, nota: result });
+        }
+        this.sortSavedAlbums();
+        this.computeRankings();
+      }
+    });
+  }
+
+  changeOrder(): void {
+    this.sortSavedAlbums();
+  }
+
+  getRecentAlbums(): void {
+    this.spotifyService.getRecentAlbums(this.authenticationToken).subscribe(recentAlbums => {
+      this.recentAlbunsList = recentAlbums.map(album => ({
+        nome: album.nome,
+        uriSpotify: album.uriSpotify,
+        urlImagem: album.urlImagem,
+        id: album.id,
+        artistas: album.artistas,
+        dataDeLancamento: album.dataDeLancamento,
+        nota: ''
+      } as Album));
+    });
+  }
+
+  setSavedAlbums(): void {
     this.spotifyService.getAlbums(this.authenticationToken).subscribe(albumList => {
-      console.log(albumList)
-      this.savedAlbunsList = albumList; 
-      this.orderedList = new OrderedAlbumList(albumList);
-      this.orderedList.orderBy(this.selectedOrder);
+      this.savedAlbunsList = albumList;
+      this.sortSavedAlbums();
+      this.computeRankings();
     });
   }
 
-  toggleRecentAlbums() {
-    this.showRecentAlbums = !this.showRecentAlbums;
+  sortSavedAlbums(): void {
+    const list = [...this.savedAlbunsList];
+    switch (this.selectedOrder) {
+      case OrderingType.ANO_DESC:
+        list.sort((a, b) => b.dataDeLancamento.localeCompare(a.dataDeLancamento));
+        break;
+      case OrderingType.ANO_ASC:
+        list.sort((a, b) => a.dataDeLancamento.localeCompare(b.dataDeLancamento));
+        break;
+      case OrderingType.NOTA_DESC:
+        list.sort((a, b) => (parseFloat(b.nota) || 0) - (parseFloat(a.nota) || 0));
+        break;
+    }
+    this.sortedSavedAlbunsList = list;
   }
 
-  toggleRatedAlbums() {
-    this.showRatedAlbums = !this.showRatedAlbums;
+  computeRankings(): void {
+    const rated = this.savedAlbunsList.filter(a => a.nota && a.nota !== '');
+
+    const artistMap = new Map<string, { total: number; count: number }>();
+    rated.forEach(album => {
+      const artist = album.artistas[0];
+      const nota = parseFloat(album.nota);
+      const entry = artistMap.get(artist) ?? { total: 0, count: 0 };
+      entry.total += nota;
+      entry.count += 1;
+      artistMap.set(artist, entry);
+    });
+    this.artistRanking = Array.from(artistMap.entries())
+      .map(([nome, { total, count }]) => ({ nome, media: total / count, count }))
+      .sort((a, b) => b.media - a.media)
+      .slice(0, 5);
+
+    const decadeMap = new Map<string, { total: number; count: number }>();
+    rated.forEach(album => {
+      const year = parseInt(album.dataDeLancamento.split('-')[0]);
+      const decade = `${Math.floor(year / 10) * 10}s`;
+      const entry = decadeMap.get(decade) ?? { total: 0, count: 0 };
+      entry.total += parseFloat(album.nota);
+      entry.count += 1;
+      decadeMap.set(decade, entry);
+    });
+    this.decadeRanking = Array.from(decadeMap.entries())
+      .map(([nome, { total, count }]) => ({ nome, media: total / count, count }))
+      .sort((a, b) => b.media - a.media)
+      .slice(0, 3);
   }
 
-  toggleSavedAlbums() {
-    this.showSavedAlbums = !this.showSavedAlbums;
+  async setAuthorizationToken(code: string): Promise<void> {
+    this.spotifyService.exchangeCode(code).subscribe(token => {
+      this.authenticationToken = token.token;
+      sessionStorage.setItem("token", token.token);
+    });
   }
-
 }

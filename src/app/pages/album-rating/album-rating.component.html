@@ -1,9 +1,21 @@
-<div class="rating-component">
-    <h2>Avalie o Álbum</h2>
-    <div class="rating-container">
-        <mat-slider thumbLabel [min]="0" [max]="10" [step]="0.1" [(ngModel)]="selectedRating"></mat-slider>
-        <div class="emoticon">{{ getEmoticon(selectedRating) }}</div>
+<div class="modal-container">
+  <div class="album-header">
+    <img [src]="data.album.urlImagem" [alt]="data.album.nome" class="album-thumb" />
+    <div class="album-info">
+      <p class="album-name">{{ data.album.nome }}</p>
+      <p class="album-artist">{{ data.album.artistas[0] }}</p>
     </div>
-    <button mat-raised-button color="primary" (click)="closeDialog()">OK</button>
-</div>
+  </div>
 
+  <div class="rating-display">
+    <span class="rating-value">{{ selectedRating.toFixed(1) }}</span>
+    <span class="rating-scale">/10</span>
+  </div>
+
+  <input type="range" min="0" max="10" step="0.1"
+         [(ngModel)]="selectedRating"
+         class="rating-slider"
+         [style.background]="'linear-gradient(to right, #1db954 ' + (selectedRating * 10) + '%, #353534 ' + (selectedRating * 10) + '%)'"/>
+
+  <button class="confirm-btn" (click)="closeDialog()">Confirmar</button>
+</div>

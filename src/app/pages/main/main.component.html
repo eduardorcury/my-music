@@ -1,89 +1,226 @@
-<div id="page">
-    <div class="content">
-        <div class="search-bar">
-            <img src="../../../assets/search.svg" alt="Search">
-            <input [formControl]="searchControl">
-        </div>
-        <div class="albuns">
-            <div *ngFor="let album of albuns" class="album">
-                <div class="album-data">
-                    <img src="{{album.urlImagem}}" alt="Imagem do Album {{album.nome}}" class="album-image">
-                    <div class="album-text">
-                        <p class="album-name">{{album.nome}}</p>
-                        <p class="album-artist">{{album.artistas[0]}}</p>
-                        <p class="album-date">{{album.dataDeLancamento}}</p>
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button (click)="salvarAlbum(album)" class="add-button">Salvar</button>
-                    <button (click)="avaliarAlbum(album)" class="add-button">Avaliar</button>
-                </div>
-            </div>
-        </div>
+<div class="flex h-screen overflow-hidden bg-background text-on-surface" style="font-family: 'Plus Jakarta Sans', sans-serif;">
 
-        <div class="recent-albums">
-            <div class="album-label">
-                <button (click)="toggleRecentAlbums()">
-                    <img src="../assets/play.svg" alt="Play Button">
-                </button>
-                <p>Tocados recentemente</p>
-            </div>
-            <div class="group-by" *ngIf="showRecentAlbums">
-                <div *ngFor="let recentAlbum of recentAlbunsList | slice:0:11" class="database-wrapper">
-                    <div class="recent-album-name">
-                        <p>{{recentAlbum.nome}}</p>
-                    </div>
-                    <img src="{{recentAlbum.urlImagem}}" alt="Imagem do Album {{recentAlbum.nome}}"
-                        class="database-album">
-                </div>
-            </div>
-         </div>
-
-        <div class="database-filter">
-            <div class="album-label">
-                <button (click)="toggleRatedAlbums()">
-                    <img src="../assets/play.svg" alt="Play Button">
-                </button>
-                <p>Álbuns com nota</p>
-            </div>
-            <mat-form-field>
-                <mat-select [(value)]="selectedOrder" (selectionChange)="changeOrder()">
-                    <mat-option *ngFor="let type of orderingTypes" [value]="type">{{type}}</mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        
-        <div class="rated-albuns" *ngIf="showRatedAlbums">
-            <div *ngFor="let recipient of orderedList.albunsAgrupados | keyvalue" class="grouped-albuns">
-                <p class="group-by-key">{{recipient.key}}</p>
-                <div class="group-by">
-                    <div *ngFor="let databaseAlbum of recipient.value" class="database-wrapper">
-                        <div class="database-album-name">
-                            <p>{{databaseAlbum.nome}}</p>
-                        </div>
-                        <img src="{{databaseAlbum.urlImagem}}" alt="Imagem do Album {{databaseAlbum.nome}}"
-                            class="database-album">
-                        <div class="rating">
-                            <div class="emoticon">{{ getEmoticon(databaseAlbum.nota) }}</div>
-                            <p class="database-album-rating">{{databaseAlbum.nota}}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="saved-albuns">
-            <div class="album-label">
-                <button (click)="showSavedAlbums = !showSavedAlbums">
-                    <img src="../assets/play.svg" alt="Play Button">
-                </button>
-                <p>Álbuns Salvos</p>
-            </div>
-            <div class="saved-album" *ngIf="showSavedAlbums">
-                <div *ngFor="let savedAlbum of savedAlbunsList">
-                    <img src="{{savedAlbum.urlImagem}}" alt="Imagem do Album {{savedAlbum.nome}}">
-                </div>
-            </div>
-        </div>
+  <!-- Sidebar -->
+  <aside class="hidden lg:flex flex-col gap-2 p-4 bg-pitch-black h-full w-64 border-r border-surface-variant z-50 shrink-0">
+    <div class="mb-8 flex items-center gap-3 px-4">
+      <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">album</span>
+      <span class="text-primary text-xl font-black tracking-tighter">AlbumTracker</span>
     </div>
+    <nav class="flex flex-col gap-1">
+      <a class="text-white font-bold flex items-center gap-4 py-3 px-4 hover:bg-surface-elevated rounded-lg transition-colors" href="#">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+        <span class="text-xs font-semibold tracking-widest uppercase">Home</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col overflow-hidden bg-background">
+
+    <!-- Header -->
+    <header class="h-16 flex items-center w-full px-6 sticky top-0 z-40 border-b border-surface-variant shrink-0"
+            style="background: rgba(19,19,19,0.85); backdrop-filter: blur(20px);">
+      <div class="relative w-full max-w-2xl">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+        <input [formControl]="searchControl"
+               class="w-full bg-surface-elevated border-none rounded-full py-2.5 pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant focus:ring-1 focus:ring-primary outline-none"
+               placeholder="Adicionar álbuns"
+               type="text"
+               style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;" />
+      </div>
+    </header>
+
+    <!-- Scrollable Content -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-8 pb-20"
+         style="scrollbar-width: thin; scrollbar-color: #353534 #131313;">
+
+      <!-- Search Results -->
+      <section *ngIf="albuns.length > 0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-primary leading-none" style="font-variation-settings: 'FILL' 1; font-size: 24px;">search</span>
+          <h2 class="text-white font-bold leading-none" style="font-size: 24px; letter-spacing: -0.01em; margin: 0;">Resultados</h2>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div *ngFor="let album of albuns"
+               class="bg-surface-container rounded-lg p-3 hover:bg-surface-elevated transition-all duration-300 cursor-pointer">
+            <div class="relative mb-3 aspect-square">
+              <img [src]="album.urlImagem" [alt]="album.nome" class="w-full h-full object-cover rounded shadow-lg" />
+            </div>
+            <h4 class="text-white font-medium truncate" style="font-size: 14px;">{{ album.nome }}</h4>
+            <p class="text-text-secondary truncate" style="font-size: 12px;">{{ album.artistas[0] }}</p>
+            <p class="text-text-secondary mb-3" style="font-size: 12px;">{{ album.dataDeLancamento }}</p>
+            <button (click)="avaliarAlbum(album)"
+                    class="w-full bg-primary-container text-on-primary-container py-1.5 rounded-full font-semibold hover:brightness-110 transition-all"
+                    style="font-size: 12px;">
+              Avaliar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hero Bento -->
+      <section>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div class="md:col-span-8 rounded-xl p-6 flex flex-col justify-end relative overflow-hidden h-64"
+               style="background: linear-gradient(135deg, rgba(29,185,84,0.25) 0%, rgba(32,31,31,1) 100%);">
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(19,19,19,0.8) 0%, transparent 100%);"></div>
+            <div class="relative z-10">
+              <h1 class="text-white font-black mb-2" style="font-size: 32px; line-height: 1.1; letter-spacing: -0.02em;">Bem-vindo ao AlbumTracker</h1>
+              <p class="text-on-secondary-container" style="font-size: 16px; max-width: 36rem;">Organize sua coleção, avalie seus álbuns favoritos e descubra novas sonoridades em uma experiência imersiva.</p>
+            </div>
+          </div>
+          <div class="md:col-span-4 grid grid-rows-2 gap-4">
+            <div class="bg-surface-elevated rounded-xl p-4 flex items-center justify-between border border-surface-variant">
+              <div>
+                <h3 class="text-white font-bold" style="font-size: 24px; letter-spacing: -0.01em; margin: 0;">{{ savedAlbunsList.length }}</h3>
+                <p class="text-on-surface-variant" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Álbuns Salvos</p>
+              </div>
+              <span class="material-symbols-outlined text-primary text-3xl">library_music</span>
+            </div>
+            <div class="bg-surface-elevated rounded-xl p-4 flex items-center justify-between border border-surface-variant">
+              <div>
+                <h3 class="text-white font-bold" style="font-size: 24px; letter-spacing: -0.01em; margin: 0;">{{ ratedCount }}</h3>
+                <p class="text-on-surface-variant" style="font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Álbuns Avaliados</p>
+              </div>
+              <span class="material-symbols-outlined text-primary text-3xl">stars</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tocados recentemente -->
+      <section *ngIf="recentAlbunsList.length > 0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-primary leading-none" style="font-variation-settings: 'FILL' 1; font-size: 24px;">play_arrow</span>
+          <h2 class="text-white font-bold leading-none" style="font-size: 24px; letter-spacing: -0.01em; margin: 0;">Tocados recentemente</h2>
+        </div>
+        <div class="flex gap-4 overflow-x-auto pb-2" style="scrollbar-width: thin; scrollbar-color: #353534 #131313;">
+          <div *ngFor="let album of recentAlbunsList | slice:0:11"
+               class="bg-surface-container rounded-lg p-3 hover:bg-surface-elevated transition-all duration-300 relative group cursor-pointer flex-shrink-0 w-36">
+            <div class="relative mb-3 aspect-square">
+              <img [src]="album.urlImagem" [alt]="album.nome" class="w-full h-full object-cover rounded shadow-lg" />
+              <div class="absolute inset-0 flex items-end justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded"
+                   style="background: rgba(0,0,0,0.55);">
+                <button (click)="avaliarAlbum(album)"
+                        class="w-full bg-primary-container text-on-primary-container rounded-full py-1 font-semibold hover:brightness-110"
+                        style="font-size: 10px;">
+                  Avaliar
+                </button>
+              </div>
+            </div>
+            <h4 class="text-white font-medium truncate" style="font-size: 14px;">{{ album.nome }}</h4>
+            <p class="text-text-secondary truncate" style="font-size: 12px;">{{ album.artistas[0] }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Álbuns Salvos -->
+      <section *ngIf="savedAlbunsList.length > 0">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary leading-none" style="font-variation-settings: 'FILL' 1; font-size: 24px;">album</span>
+            <h2 class="text-white font-bold leading-none" style="font-size: 24px; letter-spacing: -0.01em; margin: 0;">Álbuns Salvos</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-on-surface-variant" style="font-size: 12px; font-weight: 600;">ordenar</span>
+            <select [(ngModel)]="selectedOrder" (change)="changeOrder()"
+                    class="bg-surface-elevated text-on-surface rounded-lg py-1 px-3 focus:ring-1 focus:ring-primary outline-none cursor-pointer border border-surface-variant"
+                    style="font-size: 12px; font-family: 'Plus Jakarta Sans', sans-serif;">
+              <option *ngFor="let type of orderingTypes" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
+          <div *ngFor="let album of sortedSavedAlbunsList"
+               class="aspect-square bg-surface-elevated rounded overflow-hidden group relative cursor-pointer">
+            <img [src]="album.urlImagem" [alt]="album.nome"
+                 class="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-30" />
+            <div class="absolute inset-0 flex flex-col justify-end p-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <p class="text-white font-bold leading-tight truncate" style="font-size: 10px;">{{ album.nome }}</p>
+              <p class="text-text-secondary truncate" style="font-size: 9px;">{{ album.artistas[0] }}</p>
+              <div *ngIf="album.nota" class="flex items-center gap-0.5 mt-0.5">
+                <span class="material-symbols-outlined text-primary" style="font-size: 11px; font-variation-settings: 'FILL' 1;">star</span>
+                <span class="text-white font-bold" style="font-size: 10px;">{{ album.nota }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ranking por Artista -->
+      <section *ngIf="artistRanking.length > 0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-primary leading-none" style="font-variation-settings: 'FILL' 1; font-size: 24px;">emoji_events</span>
+          <h2 class="text-white font-bold leading-none" style="font-size: 24px; letter-spacing: -0.01em; margin: 0;">Ranking por Artista</h2>
+          <span class="text-on-surface-variant leading-none" style="font-size: 12px;">top 5 · média de nota</span>
+        </div>
+        <div class="space-y-2">
+          <div *ngFor="let entry of artistRanking; let i = index"
+               class="flex items-center justify-between px-4 py-3 bg-surface-container hover:bg-surface-elevated rounded-xl transition-colors border border-surface-variant">
+            <div class="flex items-center gap-4">
+              <span class="font-black text-primary" style="font-size: 18px; min-width: 20px;">{{ i + 1 }}</span>
+              <div>
+                <h4 class="text-white font-semibold" style="font-size: 15px;">{{ entry.nome }}</h4>
+                <p class="text-on-surface-variant" style="font-size: 11px;">{{ entry.count }} álbum{{ entry.count !== 1 ? 's' : '' }} avaliado{{ entry.count !== 1 ? 's' : '' }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-primary leading-none" style="font-variation-settings: 'FILL' 1; font-size: 18px;">star</span>
+              <span class="text-white font-black" style="font-size: 20px;">{{ entry.media.toFixed(1) }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ranking por Década -->
+      <section *ngIf="decadeRanking.length > 0">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-primary leading-none" style="font-variation-settings: 'FILL' 1; font-size: 24px;">calendar_month</span>
+          <h2 class="text-white font-bold leading-none" style="font-size: 24px; letter-spacing: -0.01em; margin: 0;">Ranking por Década</h2>
+          <span class="text-on-surface-variant leading-none" style="font-size: 12px;">top 3 · média de nota</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div *ngFor="let entry of decadeRanking; let i = index"
+               class="bg-surface-container rounded-xl p-6 border border-surface-variant hover:bg-surface-elevated transition-colors relative overflow-hidden">
+            <span class="absolute top-4 right-4 text-primary font-black select-none"
+                  style="font-size: 56px; opacity: 0.12; line-height: 1;">{{ i + 1 }}</span>
+            <p class="text-primary font-black mb-1" style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;">{{ entry.nome }}</p>
+            <div class="flex items-baseline gap-1 mb-1">
+              <span class="material-symbols-outlined text-primary leading-none" style="font-variation-settings: 'FILL' 1; font-size: 20px;">star</span>
+              <span class="text-white font-black" style="font-size: 36px; letter-spacing: -0.02em;">{{ entry.media.toFixed(1) }}</span>
+            </div>
+            <p class="text-on-surface-variant" style="font-size: 12px;">{{ entry.count }} álbum{{ entry.count !== 1 ? 's' : '' }} avaliado{{ entry.count !== 1 ? 's' : '' }}</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="flex justify-between items-center px-6 py-4 border-t border-surface-variant bg-background shrink-0">
+      <div class="flex items-center gap-4">
+        <span class="text-primary text-lg font-black tracking-tighter">AlbumTracker</span>
+        <span class="text-on-surface-variant" style="font-size: 12px;">© 2024 AlbumTracker. Todos os direitos reservados.</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 border-t border-surface-variant h-16 flex justify-around items-center px-4 z-50"
+       style="background: rgba(19,19,19,0.95); backdrop-filter: blur(20px);">
+    <button class="flex flex-col items-center gap-1 text-primary">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+      <span style="font-size: 10px; font-weight: 700;">Home</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+      <span class="material-symbols-outlined">search</span>
+      <span style="font-size: 10px;">Buscar</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+      <span class="material-symbols-outlined">library_music</span>
+      <span style="font-size: 10px;">Biblioteca</span>
+    </button>
+  </nav>
+
 </div>
